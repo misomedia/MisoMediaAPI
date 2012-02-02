@@ -24,6 +24,16 @@ static NSString *partsPath = @"song-parts";
                        andCallback:handler];
 }
 
+- (void)getFeaturedPartsWithParameters:(NSDictionary *)params
+                           andCallback:(void (^)(id))handler
+{
+    [self.delegate requestWithPath:partsPath 
+                            method:@"featured" 
+                         getParams:params 
+                        postParams:nil 
+                       andCallback:handler];
+}
+
 - (void)getPartWithId:(NSNumber *)part_id 
           andCallback:(void(^)(id))handler
 {    

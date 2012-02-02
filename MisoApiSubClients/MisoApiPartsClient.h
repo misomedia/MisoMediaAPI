@@ -14,6 +14,8 @@
 @property (nonatomic, assign) id<MisoApiClientProtocol> delegate;
 
 - (void)getFeaturedPartsWithCallback:(void(^)(id))handler;
+- (void)getFeaturedPartsWithParameters:(NSDictionary *)params
+                        andCallback:(void (^)(id))handler;
 
 - (void)getPartWithId:(NSNumber *)part_id 
           andCallback:(void(^)(id))handler;
