@@ -15,18 +15,15 @@ static NSString *partsPath = @"song-parts";
 // assigned
 @synthesize delegate;
 
-- (void)getFeaturedPartsWithCallback:(void(^)(id))handler
-{    
-    [self.delegate requestWithPath:partsPath 
-                            method:@"featured" 
-                         getParams:nil 
-                        postParams:nil 
-                       andCallback:handler];
-}
-
-- (void)getFeaturedPartsWithParameters:(NSDictionary *)params
-                           andCallback:(void (^)(id))handler
+- (void)getFeaturedPartsForPageNumber:(NSNumber *)pageNumber
+                            itemCount:(NSNumber *)numberOfItems
+                          andCallback:(void (^)(id))handler
 {
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                            pageNumber, @"page",
+                            numberOfItems, @"per_page",
+                            nil];
+
     [self.delegate requestWithPath:partsPath 
                             method:@"featured" 
                          getParams:params 
