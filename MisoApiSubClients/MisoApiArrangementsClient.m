@@ -14,6 +14,37 @@ static NSString *arrangementsPath = @"song-arrangements";
 @implementation MisoApiArrangementsClient
 // assigned
 @synthesize delegate;
+- (void)getFeaturedArrangementsForPageNumber:(NSNumber *)pageNumber
+                                   itemCount:(NSNumber *)numberOfItems
+                                 andCallback:(void (^)(id))handler
+{
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                            pageNumber, @"page",
+                            numberOfItems, @"per_page",
+                            nil];
+    
+    [self.delegate requestWithPath:arrangementsPath 
+                            method:@"featured" 
+                         getParams:params 
+                        postParams:nil 
+                       andCallback:handler];
+}
+
+- (void)getTopArrangementsForPageNumber:(NSNumber *)pageNumber
+                              itemCount:(NSNumber *)numberOfItems
+                            andCallback:(void (^)(id))handler
+{
+    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                            pageNumber, @"page",
+                            numberOfItems, @"per_page",
+                            nil];
+    
+    [self.delegate requestWithPath:arrangementsPath 
+                            method:@"top" 
+                         getParams:params 
+                        postParams:nil 
+                       andCallback:handler];
+}
 
 - (void)getArrangementWithId:(NSNumber *)arrangement_id 
                  andCallback:(void(^)(id))handler

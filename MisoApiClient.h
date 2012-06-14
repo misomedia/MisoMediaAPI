@@ -21,29 +21,31 @@
 #import "MisoApiClientProtocol.h"
 #import "ErrorHandlerProtocol.h"
 
-@class MisoApiAccountClient, MisoApiAdvertisementsClient, MisoApiArrangementsClient, MisoApiArtistsClient, MisoApiComposersClient,MisoApiInstrumentsClient, MisoApiInstrumentBrandsClient, MisoApiInstrumentSeriesClient, MisoApiPartsClient, MisoApiSongsClient;
+@class MisoApiAccountClient, MisoApiAdvertisementsClient, MisoApiArrangementsClient, MisoApiArtistsClient, MisoApiComposersClient,MisoApiInstrumentsClient, MisoApiInstrumentBrandsClient, MisoApiInstrumentSeriesClient, MisoApiPartsClient, MisoApiSongsClient,MisoApiBooksClient;
 
 @interface MisoApiClient : NSObject <MisoApiClientProtocol>
 
-@property (nonatomic, retain) id<ErrorHandlerProtocol> errorHandler;
+@property (nonatomic, strong) id<ErrorHandlerProtocol> errorHandler;
 
-@property (nonatomic, retain) NSString *api_key;
-@property (nonatomic, retain) NSString *version;
-@property (nonatomic, retain) NSString *user_id;
-@property (nonatomic, retain) NSString *auth_token;
+@property (nonatomic, strong) NSString *api_key;
+@property (nonatomic, strong) NSString *version;
+@property (nonatomic, strong) NSString *user_id;
+@property (nonatomic, strong) NSString *auth_token;
 
-@property (nonatomic, retain, readonly) MisoApiAccountClient            *accountClient;
-@property (nonatomic, retain, readonly) MisoApiAdvertisementsClient     *advertisementsClient;
-@property (nonatomic, retain, readonly) MisoApiArrangementsClient       *arrangementsClient;
-@property (nonatomic, retain, readonly) MisoApiArtistsClient            *artistsClient;
-@property (nonatomic, retain, readonly) MisoApiComposersClient          *composersClient;
-@property (nonatomic, retain, readonly) MisoApiInstrumentsClient        *instrumentsClient;
-@property (nonatomic, retain, readonly) MisoApiInstrumentBrandsClient   *instrumentBrandsClient;
-@property (nonatomic, retain, readonly) MisoApiInstrumentSeriesClient   *instrumentSeriesClient;
-@property (nonatomic, retain, readonly) MisoApiPartsClient              *partsClient;
-@property (nonatomic, retain, readonly) MisoApiSongsClient              *songsClient;
+@property (nonatomic, strong, readonly) MisoApiAccountClient            *accountClient;
+@property (nonatomic, strong, readonly) MisoApiAdvertisementsClient     *advertisementsClient;
+@property (nonatomic, strong, readonly) MisoApiArrangementsClient       *arrangementsClient;
+@property (nonatomic, strong, readonly) MisoApiArtistsClient            *artistsClient;
+@property (nonatomic, strong, readonly) MisoApiComposersClient          *composersClient;
+@property (nonatomic, strong, readonly) MisoApiInstrumentsClient        *instrumentsClient;
+@property (nonatomic, strong, readonly) MisoApiInstrumentBrandsClient   *instrumentBrandsClient;
+@property (nonatomic, strong, readonly) MisoApiInstrumentSeriesClient   *instrumentSeriesClient;
+@property (nonatomic, strong, readonly) MisoApiPartsClient              *partsClient;
+@property (nonatomic, strong, readonly) MisoApiSongsClient              *songsClient;
+@property (nonatomic, strong, readonly) MisoApiBooksClient              *booksClient;
 
 + (BOOL)internetIsReachable;
++ (MisoApiClient *) apiClient;
 
 @end
 

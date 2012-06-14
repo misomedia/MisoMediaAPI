@@ -19,7 +19,7 @@
  modification, are permitted provided that the following conditions are
  met:
  
- * Redistributions of source code must retain the above copyright notice,
+ * Redistributions of source code must strong the above copyright notice,
  this list of conditions and the following disclaimer.
  
  * Redistributions in binary form must reproduce the above copyright
@@ -60,7 +60,7 @@
  Apple's copyrights in this original Apple software (the "Apple Software"), to
  use, reproduce, modify and redistribute the Apple Software, with or without
  modifications, in source and/or binary forms; provided that if you redistribute
- the Apple Software in its entirety and without modifications, you must retain
+ the Apple Software in its entirety and without modifications, you must strong
  this notice and the following text and disclaimers in all such redistributions
  of the Apple Software.
 

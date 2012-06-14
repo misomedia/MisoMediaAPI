@@ -13,6 +13,14 @@
 
 @property (nonatomic, assign) id<MisoApiClientProtocol> delegate;
 
+- (void)getFeaturedArrangementsForPageNumber:(NSNumber *)pageNumber
+                                   itemCount:(NSNumber *)numberOfItems
+                                 andCallback:(void (^)(id))handler;
+
+- (void)getTopArrangementsForPageNumber:(NSNumber *)pageNumber
+                              itemCount:(NSNumber *)numberOfItems
+                            andCallback:(void (^)(id))handler;
+
 - (void)getArrangementWithId:(NSNumber *)arrangement_id 
                  andCallback:(void(^)(id))handler;
 

@@ -61,9 +61,20 @@
                            email, @"email",
                            verifiedEmail, @"email_verify",
                            verifiedPassword, @"password_verify",
-                           password, @"password", 
+                           password, @"password",
                            nil];
 
+    [self.delegate requestWithPath:accountPath 
+                            method:@"register"
+                         getParams:nil 
+                        postParams:params 
+                       andCallback:handler];
+}
+
+//JH: this is a utility method for "special case" registration
+- (void)registerAccountWithPostParams:(NSDictionary *)params 
+                         andCallback:(void(^)(id))handler
+{
     [self.delegate requestWithPath:accountPath 
                             method:@"register"
                          getParams:nil 

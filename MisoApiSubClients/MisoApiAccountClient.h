@@ -32,6 +32,10 @@ static NSString *accountPath = @"account";
                verifiedPassword:(NSString *)verifiedPassword
                     andCallback:(void(^)(id))handler;
 
+//JH: this is a utility method for "special case" registration
+- (void)registerAccountWithPostParams:(NSDictionary *)params 
+                          andCallback:(void(^)(id))handler;
+
 - (void)changePasswordWithNewPassword:(NSString *)newPassword
                           andCallback:(void(^)(id))handler;
 

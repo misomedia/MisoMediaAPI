@@ -18,30 +18,34 @@
 #import "MisoApiInstrumentSeriesClient.h"
 #import "MisoApiPartsClient.h"
 #import "MisoApiSongsClient.h"
+#import "MisoApiBooksClient.h"
 
-#import "SBJSON.h" //for < iOS 5
+//#import "SBJson.h" //for < iOS 5
 #import "Reachability.h"
-#import "MisoApiHeader.h"
 
+#import "SonataHeader.h"
 // CL: the error handler should be set externally. 
 // But putting here for now.
 #import "ErrorHandler.h"
+
+#define _LogRequestParams_ 0
 
 static NSString *misoBaseUrl = miso_api_url;
 
 static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso api errors from NSError objects
 
 @interface MisoApiClient()
+{
+    __block MisoApiClient *blockMisoApiClient;
+}
 
 - (BOOL)checkApiErrorCode:(id)incomingData error:(NSError **)anError;
 - (void)sendRequestUsingNSURLConnectionWithURLRequest:(NSURLRequest *)request andCallback:(void (^)(id))handler;
-- (void)sendRequestUsingGcdWithURLRequest:(NSURLRequest *)request andCallback:(void (^)(id))handler;
-
 // parser is only for < iOS 5
-@property (nonatomic, retain) SBJSON                    *jsonParser;
-@property (nonatomic, retain) NSOperationQueue          *opQueue;
+//@property (nonatomic, strong) SBJsonParser              *jsonParser;
+@property (nonatomic, strong) NSOperationQueue          *opQueue;
 
-@property (nonatomic, retain, readonly) NSDictionary    *userAuthData;
+@property (nonatomic, strong, readonly) NSDictionary    *userAuthData;
 @end
 
 @implementation MisoApiClient
@@ -54,7 +58,7 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
 @synthesize userAuthData            = _userAuthData;
 
 @synthesize opQueue                 = _opQueue;
-@synthesize jsonParser              = _jsonParser;
+//@synthesize jsonParser              = _jsonParser;
 @synthesize errorHandler            = _errorHandler;
 
 @synthesize accountClient           = _accountClient;
@@ -67,12 +71,26 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
 @synthesize instrumentSeriesClient  = _instrumentSeriesClient;
 @synthesize partsClient             = _partsClient;
 @synthesize songsClient             = _songsClient;
+@synthesize booksClient             = _booksClient;
 
+
+static MisoApiClient *apiClient;
+
++ (MisoApiClient *) apiClient
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        apiClient = [[MisoApiClient alloc] init];
+        
+        apiClient->blockMisoApiClient = apiClient;
+    });
+    return apiClient;
+}
 
 - (void)dealloc
 {
     [_userAuthData  release];
-    [_jsonParser    release];
+//    [_jsonParser    release];
     [_opQueue       release];
     [_errorHandler  release];
     
@@ -123,6 +141,7 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
     return result;
 }
 
+
 #pragma mark- Send Request Methods
 - (void)sendRequestUsingNSURLConnectionWithURLRequest:(NSURLRequest *)request andCallback:(void (^)(id))handler
 {
@@ -153,6 +172,7 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
                 NSLog(@"[%@ %@] JSON error: %@", NSStringFromClass([blockSelf class]), NSStringFromSelector(_cmd), error.localizedDescription);
                 results = error;
             }
+            
             // CL: Check for an Miso API errors.
             else if ([blockSelf checkApiErrorCode:results error:&error]) {
                 //CL: if there's an error make the NSError object the result.
@@ -167,54 +187,6 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
     [NSURLConnection sendAsynchronousRequest:request 
                                        queue:self.opQueue 
                            completionHandler:handleResponse];
-}
-
-- (void)sendRequestUsingGcdWithURLRequest:(NSURLRequest *)request andCallback:(void (^)(id))handler
-{
-    __block __typeof__(self)blockSelf = self;
-
-    void (^requestBlock)(void) = ^{
-        
-        NSURLResponse *response = nil;
-        NSError *error = nil;
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request 
-                                                     returningResponse:&response 
-                                                                 error:&error];
-        
-        id results = nil;
-        
-        // CL: http errors would be caught here.
-        if (error) {
-            NSLog(@"[%@ %@] HTTP error: %@", NSStringFromClass([blockSelf class]), NSStringFromSelector(_cmd), error.localizedDescription);
-            results = error;
-        }
-        else {
-            // CL: convert NSURLResponse to an NSString
-            NSString *jsonString = [[[NSString alloc] initWithBytes:[responseData bytes] 
-                                                             length:[responseData length] 
-                                                           encoding:NSISOLatin1StringEncoding] autorelease];
-           
-            // CL: parse the JSON
-            results = jsonString ? [self.jsonParser objectWithString:jsonString error:&error] : nil;
-            
-            // CL: json errors would be caught here.
-            if (error) {
-                NSLog(@"[%@ %@] JSON error: %@", NSStringFromClass([blockSelf class]), NSStringFromSelector(_cmd), error.localizedDescription);
-                results = error;
-            }
-            // CL: Check for any Miso API errors.
-            else if ([blockSelf checkApiErrorCode:results error:&error]) {
-                //CL: if there's an error make the NSError object the result.
-                if (error) results = error;
-            }
-        }
-        // If no errors send result to the completion block
-        handler(results);
-    };
-    
-    dispatch_queue_t downloadQueue = dispatch_queue_create("MisoApiClient_downloadQueue", NULL);
-    dispatch_async(downloadQueue, requestBlock);
-    dispatch_release(downloadQueue);
 }
 
 #pragma mark- MisoApiClientProtocol Method Implementations
@@ -250,6 +222,10 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
         NSData *postData        = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
         NSString *postLength    = [NSString stringWithFormat:@"%d", [postData length]];
         
+#if _LogRequestParams_
+        NSLog(@"Post Params: %@", post);
+#endif
+        
         NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL:url];
         [postRequest setHTTPMethod:@"POST"];
         [postRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -263,16 +239,19 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
         request   = [NSURLRequest requestWithURL:url];
     }
     
+#if _LogRequestParams_
+    NSLog(@"Path: %@", path);
+    NSLog(@"Method: %@", method);
+    NSLog(@"Combined Params: %@", combinedParams);
+    NSLog(@"Url String: %@", urlString);
+#endif
+    
     // CL: Since we currently have two different request options (pre/post iOS 5) check for Reachability HERE!
     if ([[self class] internetIsReachable]) 
     {
         if ([[NSURLConnection class] respondsToSelector:@selector(sendAsynchronousRequest:queue:completionHandler:)]) 
         {
             [self sendRequestUsingNSURLConnectionWithURLRequest:request andCallback:handler];
-        }
-        else // OS is < 5.0 so use GCD
-        {
-            [self sendRequestUsingGcdWithURLRequest:request andCallback:handler];
         }
     }
 }
@@ -303,14 +282,6 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
         _version = [[NSString alloc] initWithString:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];  
     }
     return _version;
-}
-
-- (SBJSON *)jsonParser
-{
-    if (!_jsonParser) {
-        _jsonParser = [[SBJSON alloc]init];
-    }
-    return _jsonParser;
 }
 
 - (NSOperationQueue *)opQueue
@@ -411,6 +382,14 @@ static const NSString *MisoApiErrorKey = @"MisoApiError"; // for retrieving miso
     return _songsClient;
 }
 
+- (MisoApiBooksClient *)booksClient
+{
+    if (!_booksClient) {
+        _booksClient = [[MisoApiBooksClient alloc]init];
+        _booksClient.delegate = self;
+    }
+    return _booksClient;
+}
 #pragma mark- Reachability Methods
 + (BOOL)internetIsReachable 
 {
@@ -469,15 +448,17 @@ static NSString *urlEncode(id object) {
 
 @implementation NSDictionary (UrlEncoding)
 
--(NSString*) urlEncodedString 
+-(NSString *)urlEncodedString 
 {
     NSMutableArray *parts = [NSMutableArray array];
+    //NSArray* sortedKeys = [self keysSortedByValueUsingSelector:@selector(caseInsensitiveCompare:)];
     for (id key in self) 
     {
-        id value = [self objectForKey: key];
+        id value = [self objectForKey:key];
         NSString *part = [NSString stringWithFormat: @"%@=%@", urlEncode(key), urlEncode(value)];
         [parts addObject: part];
     }
+    [parts sortUsingSelector:@selector(caseInsensitiveCompare:)];
     return [parts componentsJoinedByString: @"&"];
 }
 

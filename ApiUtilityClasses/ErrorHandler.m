@@ -7,10 +7,10 @@
 //
 
 #import "ErrorHandler.h"
-//#import "User.h"
+#import "User.h"
 
 @interface ErrorHandler () 
-@property (nonatomic, retain) NSArray *errorCodesArray;
+@property (nonatomic, strong) NSArray *errorCodesArray;
 @end
 
 @implementation ErrorHandler
@@ -46,8 +46,10 @@
              
         }
           */
-     //   [[User staticUser] resetUserData:nil];
+//        if([User staticUser].user_id != @"-42")
+//            [[User staticUser] resetUserData:nil];
     }
+    
 }
 
 #pragma mark- Setter/Getter Overrides
