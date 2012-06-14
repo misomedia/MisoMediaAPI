@@ -21,8 +21,8 @@
 
 #import "SBJSON.h" //for < iOS 5
 #import "Reachability.h"
-#import "NSDefaultKeysDefine.h"
-#import "StringsDefine.h"
+#import "MisoApiHeader.h"
+
 // CL: the error handler should be set externally. 
 // But putting here for now.
 #import "ErrorHandler.h"

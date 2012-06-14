@@ -7,7 +7,7 @@
 //
 
 #import "ErrorHandler.h"
-#import "User.h"
+//#import "User.h"
 
 @interface ErrorHandler () 
 @property (nonatomic, retain) NSArray *errorCodesArray;
@@ -46,7 +46,7 @@
              
         }
           */
-        [[User staticUser] resetUserData:nil];
+     //   [[User staticUser] resetUserData:nil];
     }
 }
 
