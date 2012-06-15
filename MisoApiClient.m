@@ -6,6 +6,30 @@
 //  Copyright (c) 2011 Miso Media. All rights reserved.
 //
 
+
+
+// Server Information
+// ---------- Production Server
+
+//#define miso_current_server @"Production Server"
+//#define miso_api_url @"https://music.misomedia.com/api"
+//#define miso_device_login_api_url @"https://music.misomedia.com/api/account/login.json?api_key=%@&version=%@"
+
+
+// ----------- Dev server
+
+#define miso_current_server @"Dev Server"
+#define miso_api_url @"http://dev.misomedia.com/api"
+#define miso_device_login_api_url @"http://dev.misomedia.com/api/account/login.json?api_key=%@&version=%@"
+
+
+// ----------- Staging server
+
+//#define miso_current_server @"Staging Server"
+//#define miso_api_url @"http://staging.misomedia.com/api"
+//#define miso_device_login_api_url @"http://staging.misomedia.com/api/account/login.json?api_key=%@&version=%@"
+
+
 #import "MisoApiClient.h"
 
 #import "MisoApiAccountClient.h"
@@ -23,7 +47,7 @@
 //#import "SBJson.h" //for < iOS 5
 #import "Reachability.h"
 
-#import "SonataHeader.h"
+
 // CL: the error handler should be set externally. 
 // But putting here for now.
 #import "ErrorHandler.h"
